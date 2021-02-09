@@ -548,9 +548,10 @@ const calculateSuggestions = () =>
 {
     limitedSuggestions = false;
     const suggestObjects = sess.lastResponse?.suggest;
-    const limitSuggestions = showAllSuggestions && suggestObjects ? suggestObjects.length : 13
+    const suggestionsLimit = 13;
+    const limitSuggestions = showAllSuggestions && suggestObjects ? suggestObjects.length : suggestionsLimit;
     let suggestions = suggestObjects?.map(s => s.text.trim()).slice(0, Math.min(suggestObjects.length, limitSuggestions)).join(', ');
-    if(suggestObjects && suggestObjects?.length > limitSuggestions)
+    if(suggestObjects && suggestObjects?.length > suggestionsLimit)
     {
         limitedSuggestions = true;
         suggestions += ', ...';
