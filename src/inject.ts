@@ -241,7 +241,7 @@ advancedSearchResultContainer.appendChild(footer);
 
 // Export 
 var exportButton =  document.createElement('button')
-exportButton.innerHTML = 'Export visible'
+exportButton.innerHTML = 'Export'
 exportButton.style.fontSize = '10pt';
 exportButton.style.marginLeft = 'auto';
 exportButton.onclick = async () => {
@@ -580,14 +580,11 @@ const handleResponse = (input: string, responseBody?: QueryResponse) => {
             query: noResults,
             errors: ['Too long search. If you would like to to more advanced searches you can contact us from the "Help" page']
         })
-        console.log('HERE 1');
         drawResults(true);
         return;
     }
     // Query
     else if (!responseBody || ((!responseBody.query || responseBody.query.length == 0) && ((!responseBody.suggest)))) {
-        console.log('HERE 2');
-
         noResultsPrint();
         drawResults();
         return;
