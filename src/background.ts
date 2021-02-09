@@ -36,9 +36,12 @@ chrome.runtime.onMessage.addListener(function(message:(string|{message?:string, 
  // console.log('RECIEVED MESSAGE', message);
   if (typeof message == 'string' && message == "__new_help_tab__"){
      chrome.tabs.create({ url: '/help.html'});
+     return;
   }
   if (typeof message == 'string' && message == "__new_donation_tab__"){
     chrome.tabs.create({ url: 'https://www.buymeacoffee.com/quantleaf'});
+    return;
+
   }
   const url = (message as {message:string, url:string}).url;
   const fileName = (message as {message:string, fileName:string}).fileName;
@@ -48,14 +51,11 @@ chrome.runtime.onMessage.addListener(function(message:(string|{message?:string, 
         filename: fileName,
         url: url // The object URL can be used as download URL
     });
+    return;
+
   }
-  else 
-  {
-    alert('Noting to download')
-  }
+
   
-
-
  /* const keyEvent = message as {message:string, element, event}; 
   if (keyEvent.message == "__search_key__"){
       chrome.debugger.attach(keyEvent.element, "1.2", function() {
