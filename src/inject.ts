@@ -1620,12 +1620,4 @@ observer.observe(getDefaultAdvancedSearchAutoCompleteContainer(), {
   attributes: true
 });
 
-
-
-initialize(); // Starting point 1
-chrome.runtime.onMessage.addListener(
-     (request) => {
-        if (request.message === '__new_url_ql__') {
-            initialize();  // Starting point 2
-        }
-    });
+initialize(); 

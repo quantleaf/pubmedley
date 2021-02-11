@@ -1,36 +1,9 @@
 chrome.runtime.onInstalled.addListener(function() {
-
   chrome.browserAction.onClicked.addListener(function() {
     new chrome.declarativeContent.ShowPageAction()
   });
- 
-
 });
 
-chrome.tabs.onUpdated.addListener(
-  function(tabId, changeInfo) {
-    if (changeInfo.url) {
-      chrome.tabs.sendMessage( tabId, {
-        message: '__new_url_ql__',
-        url: changeInfo.url
-      });
-    }
-  }
-);
-
-
-
-
-/*
-const onDebuggerEnabled = (debuggeeId) => {
-  debuggerEnabled = true
-}
-
-const onAttach = (debuggeeId) => {
-chrome.debugger.sendCommand(
-    debuggeeId, "Debugger.enable", {},
-    onDebuggerEnabled.bind(null, debuggeeId));
-}*/
 
 chrome.runtime.onMessage.addListener(function(message:(string|{message?:string, fileName:string, url:string})){
  // console.log('RECIEVED MESSAGE', message);
@@ -53,14 +26,6 @@ chrome.runtime.onMessage.addListener(function(message:(string|{message?:string, 
     });
     return;
 
-  }
-
-  
- /* const keyEvent = message as {message:string, element, event}; 
-  if (keyEvent.message == "__search_key__"){
-      chrome.debugger.attach(keyEvent.element, "1.2", function() {
-        chrome.debugger.sendCommand(keyEvent.element, "Input.dispatchKeyEvent", keyEvent.event)
-    })
-  }*/
+}
 });
 

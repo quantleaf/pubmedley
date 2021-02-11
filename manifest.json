@@ -3,7 +3,6 @@
     "version": "0.0.1",
     "description": "Perform PubMed advanced search in natural language and export results with a click!",
     "permissions": [
-      "tabs",
       "storage",
       "downloads"
     ],
