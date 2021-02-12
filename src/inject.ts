@@ -21,7 +21,6 @@ interface QuerySession {
     lastReadableQuery?: ReadableRepresentation,
     lastResponse?: QueryResponse;
     parsedQuery?: ParsedQuery,
-    unparsedQuery?: string
 }
 
 interface QueryStatus {
@@ -31,6 +30,7 @@ interface QueryStatus {
 }
 // URL
 const urlSearchPath = "/";
+const redirectFromQueryKey = 'fromql';
 const maxSearchLength = 250;
 
 // Settings
@@ -48,11 +48,8 @@ var sess: QuerySession = {}
 //var lastRequestTime: number = new Date().getTime();
 var lastSuggestions: string | undefined;
 var limitedSuggestions: boolean = false;
-
 var lastSearchField: HTMLInputElement | null | undefined = null;
 var lastRestoredState: QuerySession;
-var insertedLastUnparsedQuery = false;
-var hasTypedAnything = false;
 var load: Promise<any>;
 var advancedSearchResultFocused = false;
 var lastDefaultAutocompletOptionsFocused = false;
@@ -358,27 +355,15 @@ schemas.forEach((s) => {
 })
 
 
-const  saveState = async()  => {
-    return await new Promise((resolve) => {
-        chrome.storage.sync.set({ lastQuerySession: sess }, () => {
-            resolve(true);
-        })
-    });
-}
+
 const restoreLastSearchQuery = async() => {
     if (!lastSearchField)
         return;
-    lastRestoredState = await new Promise((resolve) => {
-        chrome.storage.sync.get('lastQuerySession', (data) => {
-            resolve(data.lastQuerySession);
-        });
-    }) as QuerySession;
-    if (!lastRestoredState && hasTypedAnything) {
-        return;
-    }
-    sess = lastRestoredState && lastRestoredState.parsedQuery?.searchParams == lastSearchField?.value ? lastRestoredState : {};
-    if (sess.parsedQuery?.searchParams == lastSearchField.value) {
-        restoreSearchFieldText();
+    const lastSession = fromSession();
+    if (lastSession) {
+    
+        getAndDrawResult(lastSession);
+
         const linkHolder = document.querySelector('body form div.search-links-wrapper');
         if(linkHolder)
         {
@@ -397,7 +382,7 @@ const restoreLastSearchQuery = async() => {
             lh.style.flexDirection = 'column'
 
             const lastSearchText = document.createElement('div');
-            lastSearchText.innerHTML = 'You searched</br></br>' + sess.parsedQuery?.searchParams;
+            lastSearchText.innerHTML = 'You searched</br></br>' + lastSearchField.value;
             lastSearchText.style.padding = '20px';
             lastSearchText.style.marginTop = '10px';
             lastSearchText.style.backgroundColor = 'white'
@@ -405,17 +390,28 @@ const restoreLastSearchQuery = async() => {
             lastSearchText.style.fontFamily = 'monospace';
             lastSearchText.style.boxShadow = '1px 1px 4px 1px #00000036';
             lh.appendChild(lastSearchText);
-           
+        
         }
 
-        getAndDrawResult(sess.unparsedQuery);
+        restoreSearchFieldText(lastSession);
+
+
+        return;
+
+    
+    }
+    
+        
+
 
         
-    }
-    else {
-        getAndDrawResult(lastSearchField.value);
+    
+   
+    
+    getAndDrawResult(lastSearchField.value);
 
-    }
+    
+
 
 }
 
@@ -434,12 +430,12 @@ const debounce = <T extends (...args: any[]) => any>(
     };
 };
 
-const restoreSearchFieldText = () => {
-    if (!insertedLastUnparsedQuery && sess.unparsedQuery) {
-        insertText(sess.unparsedQuery, true);
-        insertedLastUnparsedQuery = true;
-    }
+const restoreSearchFieldText = (text:string) => {
+    insertText(text, true);
 }
+const fromSession = () => new URL(window.location.href).searchParams.get(redirectFromQueryKey)
+
+
 
 const navigateSearch = async (useAdvancedSearch: boolean) => {
 
@@ -463,7 +459,7 @@ const navigateSearch = async (useAdvancedSearch: boolean) => {
                         sess.parsedQuery.searchParams = sess.parsedQuery.searchParams.substring(1,sess.parsedQuery.searchParams.length -1);
                 }
             }    
-            await saveState();
+
             if (sess.parsedQuery) // Only change value if we actually have parsed any query
             {
                 
@@ -835,7 +831,7 @@ const searchQueryParamsFromParsedQuery = (parsedQuery?: ParsedQuery) => {
 const navigateToQuery = (parsedQuery: ParsedQuery) => {
     const searchQuery = searchFieldTextFromParsedQuery(parsedQuery);
     const urlParams = searchQueryParamsFromParsedQuery(parsedQuery);
-    const toEncode = `https://${window.location.hostname}${urlSearchPath}?term=${searchQuery}${urlParams}`;
+    const toEncode = `https://${window.location.hostname}${urlSearchPath}?term=${searchQuery}${urlParams}&${redirectFromQueryKey}=${lastSearchField?.value}`;
     const request = toEncode
     window.location.href = request;
 
@@ -1524,14 +1520,7 @@ const  initialize = async () => {
         lastSearchField.addEventListener("keyup", async (event) => {
             if(event.key  == 'ArrowDown' || event.key == 'ArrowUp')
                 return;
-            hasTypedAnything = true;
-            const newVal = event.target && event.target['value'] ? event.target['value'] : ''
-            if(newVal == sess.unparsedQuery)
-                return;
-                
             updateAutoCompleteStyle();       
-
-            sess.unparsedQuery = newVal;
             sess.lastReadableQuery = undefined;
             sess.lastResponse = undefined;
             sess.parsedQuery = undefined;
@@ -1543,9 +1532,7 @@ const  initialize = async () => {
                     getAndDrawResult(lastSearchField?.value).then(() => {
                         // Hide or show
                         updateAutoCompleteStyle();
-                        saveState().then(() => {
-                            resolve(true);
-                        });
+                        resolve(true);
                     }).catch(()=>
                     {
                         resolve(true);

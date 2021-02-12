@@ -1,9 +1,8 @@
 {
     "name": "PubMedley",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "description": "Perform PubMed advanced search in natural language and export results with a click!",
     "permissions": [
-      "storage",
       "downloads"
     ],
     "background": {
