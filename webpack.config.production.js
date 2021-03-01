@@ -41,26 +41,33 @@ module.exports = {
             'process.env.NODE_ENV': JSON.stringify('production')
         }),
         new CleanWebpackPlugin(),
-        new CopyWebpackPlugin([{
-          from: "manifest.json",
-          transform: function (content, path) {
-            return Buffer.from(JSON.stringify({
-              description: process.env.npm_package_description,
-              version: process.env.npm_package_version,
-              ...JSON.parse(content.toString())
-            }))
-          }
-        },
-        {
-          from: "images",
-          to: "images"
-        },
-        {
-          from: "src/popup.js",
-          to: "popup.js"
+        new CopyWebpackPlugin({
+          patterns:
+          [
+            {
+              from: "manifest.json",
+              transform: function (content, path) {
+                return Buffer.from(JSON.stringify({
+                  description: process.env.npm_package_description,
+                  version: process.env.npm_package_version,
+                  ...JSON.parse(content.toString())
+                }))
+              }
+            },
+            {
+              from: "images",
+              to: "images"
+            },
+            {
+              from: "src/popup.js",
+              to: "popup.js"
+            }
+          ]
+            
+          
         }
       
-      ]),
+      ),
         new HtmlWebpackPlugin({
           template: path.join(__dirname, "src", "popup.html"),
           filename: "popup.html",

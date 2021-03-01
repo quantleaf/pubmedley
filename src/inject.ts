@@ -4,6 +4,7 @@ import { translate, config, generateSchema } from '@quantleaf/query-sdk-node';
 import { QueryResponse } from '@quantleaf/query-request';
 import axios from 'axios';
 import * as Papa from 'papaparse';
+
 //Models
 interface ReadableRepresentation 
 {
@@ -995,6 +996,8 @@ const italic = (text:string) =>
 {
     return '<i>' + text+ '</i>'
 }
+
+
 const wrapJoin = (arr:string[],delimiter:string) =>
 {
     return arr.join('</br>'+ delimiter+'</br>')

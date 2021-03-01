@@ -1,6 +1,6 @@
 {
   "name": "@quantleaf/pubmed-natural-advanced-search",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "build/inject.js",
   "repository": "",
   "author": "",
@@ -13,13 +13,14 @@
     "@quantleaf/query-result": "^1.0.38",
     "@quantleaf/query-schema": "^1.0.43",
     "@quantleaf/query-sdk-node": "^1.0.30",
+    "@types/node": "^14.14.30",
     "papaparse": "^5.3.0",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@types/chrome": "0.0.129",
     "clean-webpack-plugin": "^3.0.0",
-    "copy-webpack-plugin": "5.0.5",
+    "copy-webpack-plugin": "^7.0.0",
     "html-webpack-plugin": "^4.5.1",
     "ts-loader": "^8.0.15",
     "typescript": "^3.9.7",
